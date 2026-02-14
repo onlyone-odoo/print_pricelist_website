@@ -1,7 +1,7 @@
 # Copyright 2021 Tecnativa - Carlos Roca
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import models
+from odoo import _, models
 
 
 class ProductPricelistXlsx(models.AbstractModel):
@@ -29,16 +29,16 @@ class ProductPricelistXlsx(models.AbstractModel):
         return lang or self.env["res.lang"].search([], limit=1)
 
     def _create_product_pricelist_sheet(self, workbook, book, pricelist, formats):
-        sheet = workbook.add_worksheet(self.env._("PRODUCTS"))
+        sheet = workbook.add_worksheet(_("PRODUCTS"))
         # Title construction
-        sheet.write("A1", self.env._("Price List Name:"), formats["title"])
+        sheet.write("A1", _("Price List Name:"), formats["title"])
         if book.show_pricelist_name:
             sheet.write("A2", pricelist.name)
         else:
-            sheet.write("A2", self.env._("Special Pricelist"))
-        sheet.write("B1", self.env._("Currency:"), formats["title"])
+            sheet.write("A2", _("Special Pricelist"))
+        sheet.write("B1", _("Currency:"), formats["title"])
         sheet.write("B2", pricelist.currency_id.name)
-        sheet.write("D1", self.env._("Date:"), formats["title"])
+        sheet.write("D1", _("Date:"), formats["title"])
         sheet.write("D2", book.date, formats["date"])
         # Header construction
         if book.partner_id:
@@ -73,7 +73,7 @@ class ProductPricelistXlsx(models.AbstractModel):
                     sheet.write(row, i, cell_value, format_)
                 row += 1
         if book.summary:
-            sheet.write(row, 0, self.env._("Summary:"), formats["bold"])
+            sheet.write(row, 0, _("Summary:"), formats["bold"])
             sheet.write(row + 1, 0, book.summary)
         return sheet
 
@@ -105,7 +105,6 @@ class ProductPricelistXlsx(models.AbstractModel):
         }
 
     def _prepare_header_row(self, book):
-        _ = self.env._
         row = [_("Description")]
         if book.show_internal_category:
             row.append(_("Internal Category"))
@@ -138,7 +137,7 @@ class ProductPricelistXlsx(models.AbstractModel):
 
     def _set_column_widths(self, sheet, header_row):
         # Special label with wider column
-        description_label = self.env._("Description")
+        description_label = _("Description")
         for i, label in enumerate(header_row):
             width = 45 if label == description_label else 15
             sheet.set_column(i, i, width)
