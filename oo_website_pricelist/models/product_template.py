@@ -19,9 +19,13 @@ class ProductTemplate(models.Model):
         """
         Scheduled action: set show_in_website_pricelist to True when any variant
         has stock (virtual_available > 0), False otherwise.
-        Only considers saleable products.
+        Only considers saleable products; service type products are excluded
+        (no stock concept, and some setups restrict writes on them).
         """
-        templates = self.search([("sale_ok", "=", True)])
+        templates = self.search([
+            ("sale_ok", "=", True),
+            ("type", "!=", "service"),
+        ])
         with_stock = self.browse()
         without_stock = self.browse()
         for tmpl in templates:
