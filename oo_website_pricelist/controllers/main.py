@@ -45,7 +45,14 @@ class OoWebsitePricelist(http.Controller):
         show_secondary_column = bool(pricelist_secondary)
 
         date = datetime.now().date()
-        currency = company.currency_id
+        # List price is in product/company currency; pricelist columns in each pricelist's currency
+        currency_list = company.currency_id  # for list price column
+        currency_primary = (
+            pricelist_primary.currency_id if pricelist_primary else company.currency_id
+        )
+        currency_secondary = (
+            pricelist_secondary.currency_id if pricelist_secondary else company.currency_id
+        )
         rows = []
         for prod in products:
             variant = (
@@ -85,16 +92,33 @@ class OoWebsitePricelist(http.Controller):
                 "product": prod,
                 "variant": variant,
                 "list_price": list_price,
-                "list_price_fmt": "%s %.2f" % (currency.symbol, list_price),
+                "list_price_fmt": "%s %.2f" % (currency_list.symbol, list_price),
                 "primary_price": price_primary,
-                "primary_price_fmt": "%s %.2f" % (currency.symbol, price_primary),
+                "primary_price_fmt": "%s %.2f"
+                % (currency_primary.symbol, price_primary),
                 "stock_label": stock_label,
                 "website_url": getattr(prod, "website_url", "/shop"),
             }
             if show_secondary_column:
                 row["secondary_price"] = price_secondary
-                row["secondary_price_fmt"] = "%s %.2f" % (currency.symbol, price_secondary)
+                row["secondary_price_fmt"] = "%s %.2f" % (
+                    currency_secondary.symbol,
+                    price_secondary,
+                )
             rows.append(row)
+
+        # Header labels including currency for multi-currency clarity
+        primary_header = "Precio principal"
+        if pricelist_primary and pricelist_primary.name:
+            curr = pricelist_primary.currency_id
+            primary_header = "%s (%s)" % (pricelist_primary.name, curr.name if curr else "")
+        secondary_header = ""
+        if show_secondary_column and pricelist_secondary:
+            curr = pricelist_secondary.currency_id
+            secondary_header = "%s (%s)" % (
+                pricelist_secondary.name,
+                curr.name if curr else "",
+            )
 
         return request.render(
             "oo_website_pricelist.webpage_pricelist",
@@ -107,6 +131,8 @@ class OoWebsitePricelist(http.Controller):
                 "pricelist_primary": pricelist_primary,
                 "pricelist_secondary": pricelist_secondary,
                 "show_secondary_column": show_secondary_column,
+                "primary_header": primary_header,
+                "secondary_header": secondary_header,
                 "partner": request.env.user.partner_id,
                 "is_logged": not request.env.user._is_public(),
             },

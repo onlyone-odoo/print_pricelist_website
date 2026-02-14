@@ -28,9 +28,9 @@
                                 <tr>
                                     <th>Producto</th>
                                     <th>Precio de lista</th>
-                                    <th t-esc="(pricelist_primary and pricelist_primary.name) or 'Precio principal'"/>
+                                    <th t-esc="primary_header"/>
                                     <t t-if="show_secondary_column">
-                                        <th t-esc="pricelist_secondary.name"/>
+                                        <th t-esc="secondary_header"/>
                                     </t>
                                     <th>Stock</th>
                                     <th>En tienda</th>
