@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <template id="portal_my_home_pricelist_download" inherit_id="portal.portal_my_home" name="Portal Home - Pricelist Download Link">
-        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+    <!-- Add pricelist download as a card in the same row as "Connection &amp; Security" (the empty slot) -->
+    <template id="portal_my_home_pricelist_download" inherit_id="portal.portal_my_home" name="Portal Home - Pricelist Download Card">
+        <xpath expr="//div[@id='portal_common_category']" position="inside">
             <t t-if="show_pricelist_download">
                 <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/portal/static/src/img/portal-connection.svg'"/>
+                    <t t-set="title">Lista de precios</t>
+                    <t t-set="text">Descargar su lista de precios en Excel (XLSX)</t>
                     <t t-set="url">/my/pricelist/download</t>
-                    <t t-set="title">Price List (XLSX)</t>
+                    <t t-set="config_card" t-value="True"/>
                 </t>
             </t>
         </xpath>
