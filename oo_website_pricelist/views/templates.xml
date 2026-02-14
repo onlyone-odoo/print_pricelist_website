@@ -28,7 +28,10 @@
                                 <tr>
                                     <th>Producto</th>
                                     <th>Precio de lista</th>
-                                    <th>Precio efectivo</th>
+                                    <th t-esc="(pricelist_primary and pricelist_primary.name) or 'Precio principal'"/>
+                                    <t t-if="show_secondary_column">
+                                        <th t-esc="pricelist_secondary.name"/>
+                                    </t>
                                     <th>Stock</th>
                                     <th>En tienda</th>
                                 </tr>
@@ -38,7 +41,10 @@
                                     <tr>
                                         <td t-esc="row['product'].name"/>
                                         <td t-esc="row['list_price_fmt']"/>
-                                        <td t-esc="row['customer_price_fmt']"/>
+                                        <td t-esc="row['primary_price_fmt']"/>
+                                        <t t-if="show_secondary_column">
+                                            <td t-esc="row['secondary_price_fmt']"/>
+                                        </t>
                                         <td t-esc="row['stock_label']"/>
                                         <td>
                                             <a t-att-href="row['website_url']" target="_blank">Ver en tienda</a>

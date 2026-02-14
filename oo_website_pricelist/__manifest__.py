@@ -18,6 +18,8 @@
     },
     "depends": ["website", "sale"],
     "data": [
+        "views/res_config_settings_views.xml",
+        "views/product_views.xml",
         "views/views.xml",
         "views/templates.xml",
     ],
