@@ -49,8 +49,8 @@
                         </table>
                         <nav aria-label="Paginación" t-if="total_pages > 1">
                             <ul class="pagination justify-content-center flex-wrap">
-                                <li t-att-class="'page-item' + (' disabled' if page <= 1 else '')">
-                                    <a t-attf-href="/lista?page={{ page - 1 }}&amp;search={{ search or '' }}" class="page-link" t-if="page > 1">Anterior</a>
+                                <li t-att-class="'page-item' + (' disabled' if page &lt;= 1 else '')">
+                                    <a t-attf-href="/lista?page={{ page - 1 }}&amp;search={{ search or '' }}" class="page-link" t-if="page &gt; 1">Anterior</a>
                                     <span class="page-link" t-else="">Anterior</span>
                                 </li>
                                 <t t-foreach="range(1, total_pages + 1)" t-as="p">
@@ -58,8 +58,8 @@
                                         <a t-attf-href="/lista?page={{ p }}&amp;search={{ search or '' }}" class="page-link" t-esc="p"/>
                                     </li>
                                 </t>
-                                <li t-att-class="'page-item' + (' disabled' if page >= total_pages else '')">
-                                    <a t-attf-href="/lista?page={{ page + 1 }}&amp;search={{ search or '' }}" class="page-link" t-if="page < total_pages">Siguiente</a>
+                                <li t-att-class="'page-item' + (' disabled' if page &gt;= total_pages else '')">
+                                    <a t-attf-href="/lista?page={{ page + 1 }}&amp;search={{ search or '' }}" class="page-link" t-if="page &lt; total_pages">Siguiente</a>
                                     <span class="page-link" t-else="">Siguiente</span>
                                 </li>
                             </ul>
