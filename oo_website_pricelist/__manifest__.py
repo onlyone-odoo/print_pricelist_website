@@ -1,0 +1,24 @@
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
+
+{
+    "name": "Website Pricelist (Listado de precios)",
+    "summary": "Página web con tabla de productos y precios según la lista del visitante",
+    "version": "17.0.1.0.0",
+    "category": "Website",
+    "author": "Be OnlyOne",
+    "maintainers": ["onlyone-odoo"],
+    "website": "https://onlyone.odoo.com/",
+    "license": "AGPL-3",
+    "development_status": "Production/Stable",
+    "application": False,
+    "installable": True,
+    "external_dependencies": {
+        "python": [],
+        "bin": [],
+    },
+    "depends": ["website", "sale"],
+    "data": [
+        "views/views.xml",
+        "views/templates.xml",
+    ],
+}

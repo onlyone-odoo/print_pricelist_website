@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="webpage_pricelist" name="Listado de precios">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <section class="s_heading_1 pb0 pt0" data-name="Heading - 1">
+                    <div class="container">
+                        <div class="row s_nb_column_fixed s_col_no_bgcolor">
+                            <div class="col-12 heading-container text-center line-thickness-normal line-width-normal line-bottom pb0">
+                                <h2>Listado de precios</h2>
+                                <p class="lead mb-0">Puede ver todos nuestros productos con sus precios.</p>
+                                <p class="lead mb-0">Si inicia sesión, los precios se muestran según su lista de precios.</p>
+                                <p class="lead mb-0">Desde la tienda puede realizar los pedidos.</p>
+                                <form class="form-inline mb-4" role="form" action="/lista" method="get">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="search" placeholder="Buscar producto" t-att-value="search"/>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary ml-2">Buscar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="oe_structure">
+                    <div class="container">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Precio de lista</th>
+                                    <th>Precio efectivo</th>
+                                    <th>Stock</th>
+                                    <th>En tienda</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="rows" t-as="row">
+                                    <tr>
+                                        <td t-esc="row['product'].name"/>
+                                        <td t-esc="row['list_price_fmt']"/>
+                                        <td t-esc="row['customer_price_fmt']"/>
+                                        <td t-esc="row['stock_label']"/>
+                                        <td>
+                                            <a t-att-href="row['website_url']" target="_blank">Ver en tienda</a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <nav aria-label="Paginación" t-if="total_pages > 1">
+                            <ul class="pagination justify-content-center flex-wrap">
+                                <li t-att-class="'page-item' + (' disabled' if page <= 1 else '')">
+                                    <a t-attf-href="/lista?page={{ page - 1 }}&amp;search={{ search or '' }}" class="page-link" t-if="page > 1">Anterior</a>
+                                    <span class="page-link" t-else="">Anterior</span>
+                                </li>
+                                <t t-foreach="range(1, total_pages + 1)" t-as="p">
+                                    <li t-att-class="'page-item' + (' active' if p == page else '')">
+                                        <a t-attf-href="/lista?page={{ p }}&amp;search={{ search or '' }}" class="page-link" t-esc="p"/>
+                                    </li>
+                                </t>
+                                <li t-att-class="'page-item' + (' disabled' if page >= total_pages else '')">
+                                    <a t-attf-href="/lista?page={{ page + 1 }}&amp;search={{ search or '' }}" class="page-link" t-if="page < total_pages">Siguiente</a>
+                                    <span class="page-link" t-else="">Siguiente</span>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

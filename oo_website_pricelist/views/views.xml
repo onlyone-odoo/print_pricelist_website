@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu in website: links to /lista -->
+    <record id="menu_oo_website_pricelist" model="website.menu">
+        <field name="name">Lista de precios</field>
+        <field name="url">/lista</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">55</field>
+    </record>
+</odoo>
