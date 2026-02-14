@@ -18,6 +18,7 @@
     },
     "depends": ["website", "sale"],
     "data": [
+        "data/cron_data.xml",
         "views/res_config_settings_views.xml",
         "views/product_views.xml",
         "views/views.xml",
