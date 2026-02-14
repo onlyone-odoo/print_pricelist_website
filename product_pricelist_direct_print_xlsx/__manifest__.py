@@ -7,7 +7,7 @@
     "summary": "Print price list in XLSX format",
     "version": "17.0.1.0.0",
     "category": "Product",
-    "author": "Be OnlyOne",
+    "author": "Tecnativa, GRAP, Odoo Community Association (OCA),Be OnlyOne",
     "maintainers": ["onlyone-odoo"],
     "website": "https://onlyone.odoo.com/",
     "license": "AGPL-3",
