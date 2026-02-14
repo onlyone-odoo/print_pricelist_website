@@ -16,11 +16,12 @@ class CustomerPortalPricelist(CustomerPortal):
 
     def _prepare_portal_layout_values(self):
         values = super()._prepare_portal_layout_values()
-        company = request.env.company
+        company = request.env.user.company_id or request.env.company
         partner = request.env.user.partner_id
         values["company"] = company
+        pricelist = partner.with_company(company).property_product_pricelist
         values["show_pricelist_download"] = bool(
-            company.portal_pricelist_download and partner.property_product_pricelist
+            company.portal_pricelist_download and pricelist
         )
         return values
 
@@ -37,21 +38,24 @@ class PortalPricelistDownload(http.Controller):
     )
     def pricelist_download(self, **kw):
         """Generate and return the portal user's pricelist as XLSX."""
-        if not request.env.user._is_portal():
-            return request.redirect("/my")
-        if not request.env.company.portal_pricelist_download:
-            return request.redirect("/my")
         partner = request.env.user.partner_id
-        pricelist = partner.property_product_pricelist
+        company = request.env.user.company_id or request.env.company
+        if not company.portal_pricelist_download:
+            return request.redirect("/my")
+        pricelist = partner.with_company(company).property_product_pricelist
         if not pricelist:
             return request.redirect("/my")
         Wizard = request.env["product.pricelist.print"].sudo()
-        wizard = Wizard.create(
+        defaults = Wizard.default_get(
+            ["date", "group_field", "breakage_per_category"]
+        )
+        defaults.update(
             {
                 "partner_ids": [(6, 0, [partner.id])],
                 "pricelist_id": pricelist.id,
             }
         )
+        wizard = Wizard.create(defaults)
         report_model = request.env[
             "report.product_pricelist_direct_print_xlsx.report"
         ].sudo()
@@ -70,5 +74,7 @@ class PortalPricelistDownload(http.Controller):
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 ),
                 ("Content-Disposition", 'attachment; filename="%s"' % filename),
+                ("Cache-Control", "no-cache, no-store, must-revalidate"),
+                ("Pragma", "no-cache"),
             ],
         )
