@@ -19,6 +19,7 @@
     },
     "depends": [
         "portal",
+        "website",
         "product_pricelist_direct_print_xlsx",
     ],
     "data": [

@@ -27,12 +27,10 @@
                             <thead>
                                 <tr>
                                     <th>Producto</th>
-                                    <th>Precio de lista</th>
                                     <th t-esc="primary_header"/>
                                     <t t-if="show_secondary_column">
                                         <th t-esc="secondary_header"/>
                                     </t>
-                                    <th>Stock</th>
                                     <th>En tienda</th>
                                 </tr>
                             </thead>
@@ -40,12 +38,10 @@
                                 <t t-foreach="rows" t-as="row">
                                     <tr>
                                         <td t-esc="row['product'].name"/>
-                                        <td t-esc="row['list_price_fmt']"/>
                                         <td t-esc="row['primary_price_fmt']"/>
                                         <t t-if="show_secondary_column">
                                             <td t-esc="row['secondary_price_fmt']"/>
                                         </t>
-                                        <td t-esc="row['stock_label']"/>
                                         <td>
                                             <a t-att-href="row['website_url']" target="_blank">Ver en tienda</a>
                                         </td>

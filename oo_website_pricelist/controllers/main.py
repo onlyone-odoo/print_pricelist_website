@@ -45,8 +45,6 @@ class OoWebsitePricelist(http.Controller):
         show_secondary_column = bool(pricelist_secondary)
 
         date = datetime.now().date()
-        # List price is in product/company currency; pricelist columns in each pricelist's currency
-        currency_list = company.currency_id  # for list price column
         currency_primary = (
             pricelist_primary.currency_id if pricelist_primary else company.currency_id
         )
@@ -80,23 +78,12 @@ class OoWebsitePricelist(http.Controller):
             price_primary = _price(pricelist_primary)
             price_secondary = _price(pricelist_secondary) if show_secondary_column else None
 
-            virtual_available = variant.virtual_available if variant else 0
-            if virtual_available > 0:
-                stock_label = _("In stock")
-            elif variant and getattr(variant, "seller_ids", None):
-                stock_label = _("On order")
-            else:
-                stock_label = _("Out of stock")
-
             row = {
                 "product": prod,
                 "variant": variant,
-                "list_price": list_price,
-                "list_price_fmt": "%s %.2f" % (currency_list.symbol, list_price),
                 "primary_price": price_primary,
                 "primary_price_fmt": "%s %.2f"
                 % (currency_primary.symbol, price_primary),
-                "stock_label": stock_label,
                 "website_url": getattr(prod, "website_url", "/shop"),
             }
             if show_secondary_column:
