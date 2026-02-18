@@ -16,7 +16,7 @@
         "python": [],
         "bin": [],
     },
-    "depends": ["website", "sale"],
+    "depends": ["website", "sale", "website_sale"],
     "data": [
         "data/cron_data.xml",
         "views/res_config_settings_views.xml",

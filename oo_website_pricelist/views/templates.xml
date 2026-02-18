@@ -8,9 +8,9 @@
                         <div class="row s_nb_column_fixed s_col_no_bgcolor">
                             <div class="col-12 heading-container text-center line-thickness-normal line-width-normal line-bottom pb0">
                                 <h2>Listado de precios</h2>
-                                <p class="lead mb-0">Puede ver todos nuestros productos con sus precios.</p>
-                                <p class="lead mb-0">Si inicia sesión, los precios se muestran según su lista de precios.</p>
-                                <p class="lead mb-0">Desde la tienda puede realizar los pedidos.</p>
+                                <p class="lead mb-0">Puede ver todos nuestros productos, agrupados por categoría.</p>
+                                <p class="lead mb-0" t-if="is_logged">Los precios se muestran según su lista de precios. Desde la tienda puede realizar los pedidos.</p>
+                                <p class="lead mb-0" t-else="">Solo los clientes registrados pueden ver los precios. Regístrese o inicie sesión para ver precios y realizar pedidos.</p>
                                 <form class="form-inline mb-4" role="form" action="/lista" method="get">
                                     <div class="form-group">
                                         <input type="text" class="form-control" name="search" placeholder="Buscar producto" t-att-value="search"/>
@@ -23,32 +23,49 @@
                 </section>
                 <div class="oe_structure">
                     <div class="container">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th t-esc="primary_header"/>
-                                    <t t-if="show_secondary_column">
-                                        <th t-esc="secondary_header"/>
-                                    </t>
-                                    <th>En tienda</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="rows" t-as="row">
+                        <t t-foreach="groups" t-as="group">
+                            <h3 class="mt-4 mb-2" t-esc="group['category_name']"/>
+                            <table class="table table-striped table-hover">
+                                <thead>
                                     <tr>
-                                        <td t-esc="row['product'].name"/>
-                                        <td t-esc="row['primary_price_fmt']"/>
+                                        <th>Producto</th>
+                                        <th t-esc="primary_header"/>
                                         <t t-if="show_secondary_column">
-                                            <td t-esc="row['secondary_price_fmt']"/>
+                                            <th t-esc="secondary_header"/>
                                         </t>
-                                        <td>
-                                            <a t-att-href="row['website_url']" target="_blank">Ver en tienda</a>
-                                        </td>
+                                        <th>En tienda</th>
                                     </tr>
-                                </t>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="group['rows']" t-as="row">
+                                        <tr>
+                                            <td t-esc="row['product'].name"/>
+                                            <td>
+                                                <t t-if="is_logged">
+                                                    <span t-esc="row['primary_price_fmt']"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="text-muted" t-esc="message_register_to_see_prices"/>
+                                                </t>
+                                            </td>
+                                            <t t-if="show_secondary_column">
+                                                <td>
+                                                    <t t-if="is_logged">
+                                                        <span t-esc="row['secondary_price_fmt']"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span class="text-muted" t-esc="message_register_to_see_prices"/>
+                                                    </t>
+                                                </td>
+                                            </t>
+                                            <td>
+                                                <a t-att-href="row['website_url']" target="_blank">Ver en tienda</a>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
                         <nav aria-label="Paginación" t-if="total_pages > 1">
                             <ul class="pagination justify-content-center flex-wrap">
                                 <li t-att-class="'page-item' + (' disabled' if page &lt;= 1 else '')">
