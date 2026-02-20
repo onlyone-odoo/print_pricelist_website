@@ -33,7 +33,9 @@
                                         <t t-if="show_secondary_column">
                                             <th t-esc="secondary_header"/>
                                         </t>
-                                        <th>En tienda</th>
+                                        <t t-if="show_shop_column">
+                                            <th>En tienda</th>
+                                        </t>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -58,9 +60,11 @@
                                                     </t>
                                                 </td>
                                             </t>
-                                            <td>
-                                                <a t-att-href="row['website_url']" target="_blank">Ver en tienda</a>
-                                            </td>
+                                            <t t-if="show_shop_column">
+                                                <td>
+                                                    <a t-att-href="row['website_url']" target="_blank">Ver en tienda</a>
+                                                </td>
+                                            </t>
                                         </tr>
                                     </t>
                                 </tbody>

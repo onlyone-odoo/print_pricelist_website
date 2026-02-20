@@ -146,6 +146,8 @@ class OoWebsitePricelist(http.Controller):
                 curr.name if curr else "",
             )
 
+        show_shop_column = company.website_pricelist_show_shop_link
+
         return request.render(
             "oo_website_pricelist.webpage_pricelist",
             {
@@ -157,6 +159,7 @@ class OoWebsitePricelist(http.Controller):
                 "pricelist_primary": pricelist_primary,
                 "pricelist_secondary": pricelist_secondary,
                 "show_secondary_column": show_secondary_column,
+                "show_shop_column": show_shop_column,
                 "primary_header": primary_header,
                 "secondary_header": secondary_header,
                 "partner": request.env.user.partner_id,

@@ -13,6 +13,9 @@
                     <setting help="Opcional: si se elige una lista, se muestra una segunda columna de precios.">
                         <field name="website_pricelist_secondary_id"/>
                     </setting>
+                    <setting help="Desactivar para ocultar la columna con enlaces al ecommerce en /lista.">
+                        <field name="website_pricelist_show_shop_link"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

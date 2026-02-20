@@ -19,3 +19,8 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.website_pricelist_secondary_id",
         readonly=False,
     )
+    website_pricelist_show_shop_link = fields.Boolean(
+        string="Mostrar columna «Ver en tienda»",
+        related="company_id.website_pricelist_show_shop_link",
+        readonly=False,
+    )
