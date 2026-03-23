@@ -24,3 +24,7 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.website_pricelist_show_shop_link",
         readonly=False,
     )
+    website_pricelist_product_sort = fields.Selection(
+        related="company_id.website_pricelist_product_sort",
+        readonly=False,
+    )

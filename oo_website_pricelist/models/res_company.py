@@ -1,7 +1,7 @@
 # Copyright 2025 Be OnlyOne
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class ResCompany(models.Model):
@@ -21,4 +21,17 @@ class ResCompany(models.Model):
         string="Mostrar columna «Ver en tienda»",
         default=True,
         help="Si está activo, en la página /lista se muestra la columna con el enlace al ecommerce por producto.",
+    )
+    website_pricelist_product_sort = fields.Selection(
+        selection=[
+            ("name", _("Nombre (A-Z)")),
+            ("price", _("Precio (lista principal, menor a mayor)")),
+        ],
+        string=_("Orden de productos en /lista"),
+        default="name",
+        required=True,
+        help=_(
+            "Orden de las filas dentro de cada categoría web. "
+            "En el sitio se puede usar ?sort=name o ?sort=price."
+        ),
     )

@@ -16,6 +16,9 @@
                     <setting help="Desactivar para ocultar la columna con enlaces al ecommerce en /lista.">
                         <field name="website_pricelist_show_shop_link"/>
                     </setting>
+                    <setting help="Orden por defecto de las filas dentro de cada categoría. En el sitio se puede cambiar con los enlaces de ordenación o ?sort=name / ?sort=price.">
+                        <field name="website_pricelist_product_sort"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

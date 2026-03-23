@@ -3,7 +3,7 @@
 {
     "name": "Website Pricelist (Listado de precios)",
     "summary": "Página web con tabla de productos y precios según la lista del visitante",
-    "version": "17.0.1.0.0",
+    "version": "17.0.1.1.0",
     "category": "Website",
     "author": "Be OnlyOne",
     "maintainers": ["onlyone-odoo"],

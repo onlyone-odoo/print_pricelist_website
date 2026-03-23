@@ -7,6 +7,8 @@ from collections import defaultdict
 from odoo import _, http
 from odoo.http import request
 
+_SORT_MODES = frozenset({"name", "price"})
+
 
 class OoWebsitePricelist(http.Controller):
     """Controller for the public website pricelist table page."""
@@ -33,10 +35,16 @@ class OoWebsitePricelist(http.Controller):
         page = max(1, min(int(page), total_pages))
         offset = (page - 1) * limit
         products = ProductTemplate.search(
-            domain, limit=limit, offset=offset, order="name"
+            domain, limit=limit, offset=offset, order="name, id"
         )
 
         company = request.env.company
+        sort_param = (kw.get("sort") or "").strip()
+        if sort_param in _SORT_MODES:
+            sort_mode = sort_param
+        else:
+            sort_mode = company.website_pricelist_product_sort or "name"
+
         pricelist_primary = company.website_pricelist_primary_id
         if not pricelist_primary:
             partner = request.env.user.partner_id
@@ -59,28 +67,41 @@ class OoWebsitePricelist(http.Controller):
         )
 
         is_logged = not request.env.user._is_public()
-        # Group products by first public category (website_sale)
+        # Group products by first public category (website_sale). Use ID as key to avoid
+        # issues with different record instances for the same category.
         category_groups = defaultdict(list)
+        category_records = {}
         for prod in products:
             cat = None
-            if getattr(prod, "public_categ_ids", None) and prod.public_categ_ids:
+            if prod.public_categ_ids:
                 cat = prod.public_categ_ids[0]
-            category_groups[cat].append(prod)
+                category_records[cat.id] = cat
+            key = cat.id if cat else None
+            category_groups[key].append(prod)
 
-        # Sort categories: named first (by name), then None as "Sin categoría web"
-        sorted_cats = sorted(
-            (c for c in category_groups if c is not None),
-            key=lambda c: (c.sequence, c.name),
-        )
+        # Sort categories alphabetically by name (case insensitive)
+        non_none_cat_ids = [k for k in category_groups if k is not None]
+        sorted_cats = []
+        if non_none_cat_ids:
+            cats = request.env["product.public.category"].browse(non_none_cat_ids)
+            sorted_cats = sorted(
+                cats,
+                key=lambda c: (c.name or "").lower(),
+            )
         if None in category_groups:
             sorted_cats.append(None)
 
         groups = []
         for cat in sorted_cats:
-            cat_products = category_groups[cat]
-            cat_name = cat.name if cat else _("Sin categoría web")
+            if cat is None:
+                key = None
+                cat_name = _("Sin categoría web")
+            else:
+                key = cat.id
+                cat_name = cat.name
+            cat_products = category_groups[key]
             rows = []
-            for prod in sorted(cat_products, key=lambda p: p.name):
+            for prod in cat_products:
                 variant = (
                     prod.product_variant_id
                     if prod.product_variant_count == 1
@@ -125,6 +146,22 @@ class OoWebsitePricelist(http.Controller):
                     )
                 rows.append(row)
 
+            if sort_mode == "price":
+                rows.sort(
+                    key=lambda r: (
+                        r["primary_price"],
+                        (r["product"].name or "").lower(),
+                        r["product"].id,
+                    )
+                )
+            else:
+                rows.sort(
+                    key=lambda r: (
+                        (r["product"].name or "").lower(),
+                        r["product"].id,
+                    )
+                )
+
             groups.append({
                 "category": cat,
                 "category_name": cat_name,
@@ -154,6 +191,7 @@ class OoWebsitePricelist(http.Controller):
                 "productos": products,
                 "groups": groups,
                 "search": search or "",
+                "sort_mode": sort_mode,
                 "page": page,
                 "total_pages": total_pages,
                 "pricelist_primary": pricelist_primary,

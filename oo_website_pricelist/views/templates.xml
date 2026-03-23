@@ -12,11 +12,27 @@
                                 <p class="lead mb-0" t-if="is_logged">Los precios se muestran según su lista de precios. Desde la tienda puede realizar los pedidos.</p>
                                 <p class="lead mb-0" t-else="">Solo los clientes registrados pueden ver los precios. Regístrese o inicie sesión para ver precios y realizar pedidos.</p>
                                 <form class="form-inline mb-4" role="form" action="/lista" method="get">
+                                    <input type="hidden" name="sort" t-att-value="sort_mode"/>
                                     <div class="form-group">
                                         <input type="text" class="form-control" name="search" placeholder="Buscar producto" t-att-value="search"/>
                                     </div>
                                     <button type="submit" class="btn btn-primary ml-2">Buscar</button>
                                 </form>
+                                <p class="mb-3">
+                                    <span class="text-muted mr-2">Ordenar por:</span>
+                                    <t t-if="sort_mode == 'name'">
+                                        <strong class="mr-2">Nombre (A-Z)</strong>
+                                    </t>
+                                    <t t-else="">
+                                        <a class="mr-2" t-attf-href="/lista?sort=name&amp;search={{ search or '' }}">Nombre (A-Z)</a>
+                                    </t>
+                                    <t t-if="sort_mode == 'price'">
+                                        <strong>Precio (menor a mayor)</strong>
+                                    </t>
+                                    <t t-else="">
+                                        <a t-attf-href="/lista?sort=price&amp;search={{ search or '' }}">Precio (menor a mayor)</a>
+                                    </t>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -73,16 +89,16 @@
                         <nav aria-label="Paginación" t-if="total_pages > 1">
                             <ul class="pagination justify-content-center flex-wrap">
                                 <li t-att-class="'page-item' + (' disabled' if page &lt;= 1 else '')">
-                                    <a t-attf-href="/lista?page={{ page - 1 }}&amp;search={{ search or '' }}" class="page-link" t-if="page &gt; 1">Anterior</a>
+                                    <a t-attf-href="/lista?page={{ page - 1 }}&amp;search={{ search or '' }}&amp;sort={{ sort_mode }}" class="page-link" t-if="page &gt; 1">Anterior</a>
                                     <span class="page-link" t-else="">Anterior</span>
                                 </li>
                                 <t t-foreach="range(1, total_pages + 1)" t-as="p">
                                     <li t-att-class="'page-item' + (' active' if p == page else '')">
-                                        <a t-attf-href="/lista?page={{ p }}&amp;search={{ search or '' }}" class="page-link" t-esc="p"/>
+                                        <a t-attf-href="/lista?page={{ p }}&amp;search={{ search or '' }}&amp;sort={{ sort_mode }}" class="page-link" t-esc="p"/>
                                     </li>
                                 </t>
                                 <li t-att-class="'page-item' + (' disabled' if page &gt;= total_pages else '')">
-                                    <a t-attf-href="/lista?page={{ page + 1 }}&amp;search={{ search or '' }}" class="page-link" t-if="page &lt; total_pages">Siguiente</a>
+                                    <a t-attf-href="/lista?page={{ page + 1 }}&amp;search={{ search or '' }}&amp;sort={{ sort_mode }}" class="page-link" t-if="page &lt; total_pages">Siguiente</a>
                                     <span class="page-link" t-else="">Siguiente</span>
                                 </li>
                             </ul>
