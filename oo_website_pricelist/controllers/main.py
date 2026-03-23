@@ -1,13 +1,46 @@
 # Copyright 2025 Be OnlyOne
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from datetime import datetime
+import re
+import unicodedata
 from collections import defaultdict
+from datetime import datetime
 
 from odoo import _, http
 from odoo.http import request
 
 _SORT_MODES = frozenset({"name", "price"})
+
+# Zero-width / BOM (category Cf may miss some legacy chars in all Python versions)
+_INVISIBLE_CHARS_RE = re.compile(
+    r"[\u200b-\u200f\u2028-\u202f\u2060-\u2064\u2066-\u2069\ufeff]"
+)
+
+
+def _text_sort_key(text, tie_id=0):
+    """Return (key, id) for stable, human-expected alphabetical ordering.
+
+    Strips invisible and format control characters (e.g. ZWSP, bidi isolates)
+    that otherwise sort after normal letters and break A–Z order. Uses NFKC
+    normalization and casefold() for consistent Unicode-aware comparison.
+
+    Args:
+        text: String to sort by (e.g. product or category name).
+        tie_id: Secondary key for deterministic ordering when names match.
+
+    Returns:
+        Tuple ``(sort_key, tie_id)`` for use in ``list.sort(key=...)``.
+    """
+    raw = text or ""
+    normalized = unicodedata.normalize("NFKC", raw)
+    without_invis = _INVISIBLE_CHARS_RE.sub("", normalized)
+    # Remaining format chars (e.g. bidi isolates U+2066) still break lexicographic order
+    without_cf = "".join(
+        ch for ch in without_invis if unicodedata.category(ch) != "Cf"
+    )
+    collapsed = " ".join(without_cf.split())
+    key = collapsed.casefold()
+    return (key, tie_id)
 
 
 class OoWebsitePricelist(http.Controller):
@@ -86,7 +119,7 @@ class OoWebsitePricelist(http.Controller):
             cats = request.env["product.public.category"].browse(non_none_cat_ids)
             sorted_cats = sorted(
                 cats,
-                key=lambda c: (c.name or "").lower(),
+                key=lambda c: _text_sort_key(c.name, c.id),
             )
         if None in category_groups:
             sorted_cats.append(None)
@@ -150,14 +183,13 @@ class OoWebsitePricelist(http.Controller):
                 rows.sort(
                     key=lambda r: (
                         r["primary_price"],
-                        (r["product"].name or "").lower(),
-                        r["product"].id,
                     )
+                    + _text_sort_key(r["product"].name, r["product"].id)
                 )
             else:
                 rows.sort(
-                    key=lambda r: (
-                        (r["product"].name or "").lower(),
+                    key=lambda r: _text_sort_key(
+                        r["product"].name,
                         r["product"].id,
                     )
                 )
